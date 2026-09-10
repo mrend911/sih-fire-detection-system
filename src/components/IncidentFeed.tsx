@@ -17,7 +17,7 @@ export default function IncidentFeed({
   onSelect,
 }: {
   events: FireEvent[];
-  selectedId?: string;
+  selectedId?: string | undefined;
   onSelect: (event: FireEvent) => void;
 }) {
   if (events.length === 0) {
