@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fire_events: {
+        Row: {
+          alert_message: string | null
+          alert_sent: boolean
+          created_at: string
+          device_id: string | null
+          fire_type: string
+          id: string
+          latitude: number
+          longitude: number
+          nearest_station_address: string | null
+          nearest_station_distance_km: number | null
+          nearest_station_lat: number | null
+          nearest_station_lng: number | null
+          nearest_station_name: string | null
+          nearest_station_phone: string | null
+          resolved_address: string | null
+          severity_level: number
+          simulated: boolean
+          temperature_celsius: number
+        }
+        Insert: {
+          alert_message?: string | null
+          alert_sent?: boolean
+          created_at?: string
+          device_id?: string | null
+          fire_type: string
+          id?: string
+          latitude: number
+          longitude: number
+          nearest_station_address?: string | null
+          nearest_station_distance_km?: number | null
+          nearest_station_lat?: number | null
+          nearest_station_lng?: number | null
+          nearest_station_name?: string | null
+          nearest_station_phone?: string | null
+          resolved_address?: string | null
+          severity_level: number
+          simulated?: boolean
+          temperature_celsius: number
+        }
+        Update: {
+          alert_message?: string | null
+          alert_sent?: boolean
+          created_at?: string
+          device_id?: string | null
+          fire_type?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          nearest_station_address?: string | null
+          nearest_station_distance_km?: number | null
+          nearest_station_lat?: number | null
+          nearest_station_lng?: number | null
+          nearest_station_name?: string | null
+          nearest_station_phone?: string | null
+          resolved_address?: string | null
+          severity_level?: number
+          simulated?: boolean
+          temperature_celsius?: number
+        }
+        Relationships: []
+      }
+      fire_stations: {
+        Row: {
+          address: string
+          city: string | null
+          created_at: string
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          address: string
+          city?: string | null
+          created_at?: string
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
