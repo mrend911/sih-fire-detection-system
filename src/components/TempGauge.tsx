@@ -14,12 +14,13 @@ export default function TempGauge({
   const radius = size / 2 - 16;
   const cx = size / 2;
   const cy = size / 2;
-  const startAngle = 135;
+  const startAngle = 225;
   const sweep = 270;
 
+  // Angles measured clockwise from north, so the gauge gap sits at the bottom.
   const polar = (angleDeg: number, r: number) => {
-    const a = ((angleDeg - 90) * Math.PI) / 180;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)] as const;
+    const a = (angleDeg * Math.PI) / 180;
+    return [cx + r * Math.sin(a), cy - r * Math.cos(a)] as const;
   };
 
   const arcPath = (from: number, to: number, r: number) => {
@@ -78,7 +79,7 @@ export default function TempGauge({
         <circle cx={cx} cy={cy} r={4} fill={meta.color} />
         <text
           x={cx}
-          y={cy + radius * 0.55}
+          y={cy + 6}
           textAnchor="middle"
           className="font-mono"
           fontSize={26}
@@ -88,7 +89,7 @@ export default function TempGauge({
         </text>
         <text
           x={cx}
-          y={cy + radius * 0.55 + 20}
+          y={cy + 26}
           textAnchor="middle"
           fontSize={11}
           fill={meta.color}

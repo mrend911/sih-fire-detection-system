@@ -67,7 +67,7 @@ function Panel({
         </h2>
         {right}
       </header>
-      <div className={cn("min-h-0 flex-1", bodyClassName)}>{children}</div>
+      <div className={cn("min-h-0", bodyClassName)}>{children}</div>
     </section>
   );
 }
@@ -246,7 +246,7 @@ function Dashboard() {
                   {events.length} events
                 </span>
               }
-              bodyClassName="max-h-[26rem] overflow-y-auto"
+              bodyClassName="max-h-[26rem] flex-1 overflow-y-auto"
             >
               <IncidentFeed
                 events={events}

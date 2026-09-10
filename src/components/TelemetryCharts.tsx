@@ -41,7 +41,7 @@ export function TemperatureTrend({ events }: { events: FireEvent[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={190}>
-      <AreaChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="tempFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--sev-2)" stopOpacity={0.55} />
@@ -50,7 +50,7 @@ export function TemperatureTrend({ events }: { events: FireEvent[] }) {
         </defs>
         <CartesianGrid stroke="var(--grid)" strokeDasharray="2 4" vertical={false} />
         <XAxis dataKey="time" tick={axisStyle} tickLine={false} axisLine={false} minTickGap={24} />
-        <YAxis tick={axisStyle} tickLine={false} axisLine={false} width={44} />
+        <YAxis tick={axisStyle} tickLine={false} axisLine={false} width={52} />
         <ReferenceLine y={500} stroke="var(--sev-1)" strokeDasharray="4 4" />
         <ReferenceLine y={2000} stroke="var(--sev-3)" strokeDasharray="4 4" />
         <Tooltip contentStyle={tooltipStyle()} labelStyle={{ color: "var(--muted-foreground)" }} />
@@ -76,10 +76,10 @@ export function SeverityBreakdown({ events }: { events: FireEvent[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={190}>
-      <BarChart data={data} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="var(--grid)" strokeDasharray="2 4" vertical={false} />
         <XAxis dataKey="name" tick={axisStyle} tickLine={false} axisLine={false} />
-        <YAxis tick={axisStyle} tickLine={false} axisLine={false} width={44} allowDecimals={false} />
+        <YAxis tick={axisStyle} tickLine={false} axisLine={false} width={52} allowDecimals={false} />
         <Tooltip
           cursor={{ fill: "var(--accent)", opacity: 0.3 }}
           contentStyle={tooltipStyle()}
