@@ -124,6 +124,59 @@ export function haversineKm(
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+export interface EmergencyCall {
+  id: string;
+  caller_name: string;
+  caller_phone: string;
+  location_text: string | null;
+  latitude: number;
+  longitude: number;
+  emergency_type: string;
+  urgency_level: number;
+  notes: string | null;
+  status: string;
+  dispatched_station_name: string | null;
+  dispatched_station_phone: string | null;
+  dispatched_station_distance_km: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const EMERGENCY_TYPES = [
+  "Wildfire",
+  "Structure fire",
+  "Vehicle fire",
+  "Industrial / chemical fire",
+  "Smoke sighting",
+  "Gas leak",
+  "Rescue / other",
+] as const;
+
+export const CALL_STATUSES = ["pending", "dispatched", "resolved"] as const;
+export type CallStatus = (typeof CALL_STATUSES)[number];
+
+export const STATUS_META: Record<string, { label: string; className: string }> = {
+  pending: {
+    label: "Pending",
+    className: "border-[color:var(--sev-2)]/50 text-[color:var(--sev-2)]",
+  },
+  dispatched: {
+    label: "Dispatched",
+    className: "border-[color:var(--sev-3)]/50 text-[color:var(--sev-3)]",
+  },
+  resolved: {
+    label: "Resolved",
+    className: "border-[color:var(--sev-0)]/50 text-[color:var(--sev-0)]",
+  },
+};
+
+export const URGENCY_META: Record<number, { label: string; text: string }> = {
+  1: { label: "Low", text: "text-[color:var(--sev-0)]" },
+  2: { label: "Elevated", text: "text-[color:var(--sev-1)]" },
+  3: { label: "High", text: "text-[color:var(--sev-2)]" },
+  4: { label: "Critical", text: "text-[color:var(--sev-3)]" },
+};
+
 export const SIM_PRESETS: { id: string; label: string; range: [number, number] }[] = [
   { id: "local", label: "Local Fire", range: [40, 499] },
   { id: "industrial", label: "Industrial Fire", range: [501, 1999] },

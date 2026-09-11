@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   classifyTemperature,
   haversineKm,
+  type EmergencyCall,
   type FireEvent,
   type FireStation,
 } from "./fire-core";
@@ -166,6 +167,83 @@ export const listStations = createServerFn({ method: "GET" }).handler(async () =
   if (error) throw new Error(error.message);
   return (data ?? []) as FireStation[];
 });
+
+const callSchema = z.object({
+  callerName: z.string().min(2).max(80),
+  callerPhone: z.string().min(5).max(32),
+  locationText: z.string().max(200).optional(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  emergencyType: z.string().min(2).max(60),
+  urgencyLevel: z.number().int().min(1).max(4),
+  notes: z.string().max(500).optional(),
+});
+
+/** Places an emergency call and attaches the nearest responding station. */
+export const placeEmergencyCall = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => callSchema.parse(input))
+  .handler(async ({ data }) => {
+    const supabase = serverClient();
+    const [address, stations] = await Promise.all([
+      data.locationText ? Promise.resolve(data.locationText) : reverseGeocode(data.latitude, data.longitude),
+      nearestStations(supabase, data.latitude, data.longitude, 1),
+    ]);
+    const station = stations[0] ?? null;
+
+    const { data: inserted, error } = await supabase
+      .from("emergency_calls")
+      .insert({
+        caller_name: data.callerName,
+        caller_phone: data.callerPhone,
+        location_text: address,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        emergency_type: data.emergencyType,
+        urgency_level: data.urgencyLevel,
+        notes: data.notes ?? null,
+        status: "pending",
+        dispatched_station_name: station?.name ?? null,
+        dispatched_station_phone: station?.phone ?? null,
+        dispatched_station_distance_km: station?.distance_km ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return inserted as unknown as EmergencyCall;
+  });
+
+/** Emergency call log, newest first. */
+export const listEmergencyCalls = createServerFn({ method: "GET" }).handler(async () => {
+  const supabase = serverClient();
+  const { data, error } = await supabase
+    .from("emergency_calls")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new Error(error.message);
+  return (data ?? []) as unknown as EmergencyCall[];
+});
+
+const statusSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["pending", "dispatched", "resolved"]),
+});
+
+/** Operator action: move a call between Pending / Dispatched / Resolved. */
+export const updateCallStatus = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => statusSchema.parse(input))
+  .handler(async ({ data }) => {
+    const supabase = serverClient();
+    const { data: updated, error } = await supabase
+      .from("emergency_calls")
+      .update({ status: data.status })
+      .eq("id", data.id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return updated as unknown as EmergencyCall;
+  });
 
 const lookupSchema = z.object({ latitude: z.number(), longitude: z.number() });
 
