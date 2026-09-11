@@ -119,6 +119,42 @@ function Dashboard() {
   const fetchStations = useServerFn(listStations);
   const fetchNearby = useServerFn(lookupStations);
   const runDetect = useServerFn(detectFire);
+  const fetchCalls = useServerFn(listEmergencyCalls);
+  const runCall = useServerFn(placeEmergencyCall);
+  const runStatus = useServerFn(updateCallStatus);
+
+  const callsQuery = useQuery({
+    queryKey: ["emergency-calls"],
+    queryFn: () => fetchCalls(),
+    refetchInterval: 15000,
+  });
+  const calls = callsQuery.data ?? [];
+
+  const callMutation = useMutation({
+    mutationFn: (input: EmergencyCallInput) => runCall({ data: input }),
+    onSuccess: (call) => {
+      void queryClient.invalidateQueries({ queryKey: ["emergency-calls"] });
+      toast("Emergency call logged", {
+        description: call.dispatched_station_name
+          ? `Routed to ${call.dispatched_station_name}${
+              call.dispatched_station_distance_km != null
+                ? ` (${call.dispatched_station_distance_km.toFixed(1)} km)`
+                : ""
+            }`
+          : "No station could be matched automatically.",
+      });
+    },
+    onError: (error: Error) => toast.error("Call failed", { description: error.message }),
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: (vars: { id: string; status: CallStatus }) => runStatus({ data: vars }),
+    onSuccess: (call) => {
+      void queryClient.invalidateQueries({ queryKey: ["emergency-calls"] });
+      toast(`Call marked ${call.status}`);
+    },
+    onError: (error: Error) => toast.error("Update failed", { description: error.message }),
+  });
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -215,6 +251,27 @@ function Dashboard() {
               </p>
             </div>
           </div>
+          <nav className="flex items-center gap-1 text-xs">
+            <a
+              href="#overview"
+              className="rounded border border-border px-2.5 py-1 text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
+            >
+              Overview
+            </a>
+            <a
+              href="#emergency"
+              className="rounded border border-primary/60 bg-primary/10 px-2.5 py-1 font-medium text-primary transition-colors hover:bg-primary/20"
+            >
+              <PhoneCall className="mr-1 inline h-3 w-3" />
+              Emergency calls
+            </a>
+            <a
+              href="#stations"
+              className="rounded border border-border px-2.5 py-1 text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
+            >
+              Stations
+            </a>
+          </nav>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="live-dot h-2 w-2 rounded-full bg-sev-0 text-sev-0" aria-hidden />
@@ -378,11 +435,45 @@ function Dashboard() {
           </div>
         </div>
 
+        <div id="emergency" className="grid gap-4 scroll-mt-20 xl:grid-cols-[24rem_minmax(0,1fr)]">
+          <Panel title="Contact fire department" icon={<PhoneCall className="h-3.5 w-3.5" />}>
+            <EmergencyCallForm
+              onSubmit={(input) => callMutation.mutate(input)}
+              pending={callMutation.isPending}
+              {...(selected
+                ? { defaultLatitude: selected.latitude, defaultLongitude: selected.longitude }
+                : {})}
+            />
+          </Panel>
+
+          <Panel
+            title="Emergency call log"
+            icon={<Siren className="h-3.5 w-3.5" />}
+            right={
+              <span className="font-mono text-[10px] text-muted-foreground">
+                {openCalls} open · {calls.length} total
+              </span>
+            }
+            bodyClassName="max-h-[34rem] overflow-auto"
+          >
+            <CallLog
+              calls={calls}
+              pendingId={statusMutation.variables?.id}
+              onStatusChange={(id, status) => statusMutation.mutate({ id, status })}
+            />
+          </Panel>
+        </div>
+
         <Panel title="Nearest fire stations" icon={<Radar className="h-3.5 w-3.5" />}>
           <StationCards stations={nearby} />
         </Panel>
 
-        <Panel title="Station directory" icon={<Radar className="h-3.5 w-3.5" />}>
+        <Panel
+          title="Station directory"
+          icon={<Radar className="h-3.5 w-3.5" />}
+          className="scroll-mt-20"
+          id="stations"
+        >
           <StationCards stations={stations} />
         </Panel>
 
