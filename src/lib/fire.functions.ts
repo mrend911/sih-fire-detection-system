@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   classifyTemperature,
   haversineKm,
+  type EmergencyCall,
   type FireEvent,
   type FireStation,
 } from "./fire-core";
