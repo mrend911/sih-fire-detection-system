@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      emergency_calls: {
+        Row: {
+          caller_name: string
+          caller_phone: string
+          created_at: string
+          dispatched_station_distance_km: number | null
+          dispatched_station_name: string | null
+          dispatched_station_phone: string | null
+          emergency_type: string
+          id: string
+          latitude: number
+          location_text: string | null
+          longitude: number
+          notes: string | null
+          status: string
+          updated_at: string
+          urgency_level: number
+        }
+        Insert: {
+          caller_name: string
+          caller_phone: string
+          created_at?: string
+          dispatched_station_distance_km?: number | null
+          dispatched_station_name?: string | null
+          dispatched_station_phone?: string | null
+          emergency_type: string
+          id?: string
+          latitude: number
+          location_text?: string | null
+          longitude: number
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          urgency_level?: number
+        }
+        Update: {
+          caller_name?: string
+          caller_phone?: string
+          created_at?: string
+          dispatched_station_distance_km?: number | null
+          dispatched_station_name?: string | null
+          dispatched_station_phone?: string | null
+          emergency_type?: string
+          id?: string
+          latitude?: number
+          location_text?: string | null
+          longitude?: number
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          urgency_level?: number
+        }
+        Relationships: []
+      }
       fire_events: {
         Row: {
           alert_message: string | null
