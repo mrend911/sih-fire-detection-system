@@ -68,6 +68,7 @@ function Panel({
   right,
   className,
   bodyClassName,
+  id,
   children,
 }: {
   title: string;
@@ -75,10 +76,14 @@ function Panel({
   right?: React.ReactNode;
   className?: string;
   bodyClassName?: string;
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className={cn("panel-surface flex flex-col overflow-hidden rounded-xl", className)}>
+    <section
+      id={id}
+      className={cn("panel-surface flex flex-col overflow-hidden rounded-xl", className)}
+    >
       <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
         <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           {icon}
@@ -232,6 +237,7 @@ function Dashboard() {
   const activeCritical = events.filter((e) => e.severity_level >= 2).length;
   const peak = events.length ? Math.max(...events.map((e) => e.temperature_celsius)) : 0;
   const alertsSent = events.filter((e) => e.alert_sent).length;
+  const openCalls = calls.filter((c) => c.status !== "resolved").length;
 
   return (
     <div className="min-h-screen">
@@ -286,7 +292,13 @@ function Dashboard() {
       </header>
 
       <main className="mx-auto max-w-[110rem] space-y-4 px-4 py-4 sm:px-6">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div id="overview" className="grid scroll-mt-20 grid-cols-2 gap-3 lg:grid-cols-5">
+          <StatTile
+            label="Open emergency calls"
+            value={String(openCalls)}
+            tone="text-primary"
+            icon={<PhoneCall className="h-3 w-3" />}
+          />
           <StatTile
             label="Incidents logged"
             value={String(events.length)}
