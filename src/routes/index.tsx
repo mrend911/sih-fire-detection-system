@@ -3,19 +3,38 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ClientOnly } from "@tanstack/react-router";
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
-import { Flame, Activity, Siren, Radar, ThermometerSun, Clock } from "lucide-react";
+import {
+  Flame,
+  Activity,
+  Siren,
+  Radar,
+  ThermometerSun,
+  Clock,
+  PhoneCall,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import CallLog from "@/components/CallLog";
+import EmergencyCallForm, { type EmergencyCallInput } from "@/components/EmergencyCallForm";
 import IncidentFeed from "@/components/IncidentFeed";
 import SimulationPanel, { type SimulationInput } from "@/components/SimulationPanel";
 import StationCards from "@/components/StationCards";
 import TempGauge from "@/components/TempGauge";
 import { SeverityBreakdown, TemperatureTrend } from "@/components/TelemetryCharts";
 import { Toaster } from "@/components/ui/sonner";
-import { detectFire, listEvents, listStations, lookupStations } from "@/lib/fire.functions";
+import {
+  detectFire,
+  listEmergencyCalls,
+  listEvents,
+  listStations,
+  lookupStations,
+  placeEmergencyCall,
+  updateCallStatus,
+} from "@/lib/fire.functions";
 import {
   SEVERITY_META,
   haversineKm,
+  type CallStatus,
   type FireEvent,
   type FireStation,
 } from "@/lib/fire-core";
